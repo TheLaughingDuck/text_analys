@@ -76,14 +76,6 @@ def get_frequencies(words, look_for = "all", letter_freq = True):
         wordpaircount (dict): A dict with tuples (word, successor) as keys, and the frequency of successor immediately following word as the value.
     """
 
-    ## Count occurences of each letter and sort in descending order
-    #lettercount = {}
-    #for letter in "".join(words):
-    #    if letter in lettercount:
-    #        lettercount[letter] += 1
-    #    else: lettercount[letter] = 1
-    #lettercount = dict(sorted(lettercount.items(), key = lambda item: item[1], reverse=True))
-
     # Count occurences of all words and sort in descending order (old version)
     wordcount = {}
     for word in words:
@@ -93,11 +85,6 @@ def get_frequencies(words, look_for = "all", letter_freq = True):
                 wordcount[word] += 1
             else: wordcount[word] = 1
     wordcount = dict(sorted(wordcount.items(), key = lambda item: item[1], reverse=True))
-
-    # Count occurences of all words and sort in descending order (new version) (remove: it was worse)
-    #wordcount = {}
-    #for word in words: wordcount[word] = words.count(word)
-    #wordcount = dict(sorted(wordcount.items(), key = lambda item: item[1], reverse=True))
     
     # Count all subsequent occurences and sort in descending order
     wordpaircount = {}
@@ -110,7 +97,7 @@ def get_frequencies(words, look_for = "all", letter_freq = True):
             else: wordpaircount[(words[i], words[i+1])] = 1
     wordpaircount = dict(sorted(wordpaircount.items(), key = lambda item: item[1], reverse=True))
     
-    # Should letter freq also be computed?
+    # Possibly calculate letter frequency as well
     if letter_freq:
         # Count occurences of each letter and sort in descending order
         lettercount = {}
