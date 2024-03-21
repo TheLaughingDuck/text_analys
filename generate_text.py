@@ -57,19 +57,33 @@ if __name__ == "__main__":
 
     # Iterate until a text of the desired length is achieved
     while len(generated_text) < n_words and time()-start_time < 60:
+        # # Get frequency of consequents to current word
+        # if current_word not in word_count:
+        #     # Iterate through each word in the entire text
+        #     for i in range(len(input_text)-1):
+        #         if input_text[i] == current_word:
+        #             if (current_word, input_text[i+1]) not in wordpair_count:
+        #                 wordpair_count[(current_word, input_text[i+1])] = 1
+        #             else:
+        #                 wordpair_count[(current_word, input_text[i+1])] += 1
+        
+        # # Get frequency of current word (if not in word_count already)
+        # if current_word not in word_count:
+        #     word_count[current_word] = input_text.count(current_word)
+        
+        
+        ##### Alternative get frequencies #####
         # Get frequency of consequents to current word
         if current_word not in word_count:
-            # Iterate through each word in the entire text
-            for i in range(len(input_text)-1):
-                if input_text[i] == current_word:
-                    if (current_word, input_text[i+1]) not in wordpair_count:
-                        wordpair_count[(current_word, input_text[i+1])] = 1
-                    else:
-                        wordpair_count[(current_word, input_text[i+1])] += 1
+            # Get frequencies (single and pair) for current word
+            single_freq, pair_freq = text_stats.get_frequencies(input_text, look_for=[current_word], letter_freq=False)
+
+            # Update dictionaries
+            word_count = {**word_count, **single_freq}
+            wordpair_count = {**wordpair_count, **pair_freq}
+
+        ##### Alternative get frequencies #####
         
-        # Get frequency of current word (if not in word_count already)
-        if current_word not in word_count:
-            word_count[current_word] = input_text.count(current_word)
 
         # Get successor candidates and their weights, and then randomly select the next word
         candidates = list(filter(lambda x: x[0] == current_word, wordpair_count))

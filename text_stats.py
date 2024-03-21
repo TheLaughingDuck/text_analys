@@ -60,11 +60,15 @@ def clean_text(text):
 
 
 ### --- TEXT ANALYSIS --- ###
-def get_frequencies(words):
+def get_frequencies(words, look_for = "all", letter_freq = True):
     """Generate dictionaries for the frequencies of individual letters, words, and successor-words respectively.
 
     Arg:
         words (list of strings): A list of alphabetic strings.
+        look_for (string or list): An optional argument specifying which words to get frequencies for.
+            if "all", the frequencies for all words are calculated and returned.
+        letter_freq (bool): Whether to calculate and return a letter frequency dict in addition to
+            the word, and wordpair frequency dicts.
 
     Returns:
         wordcount (dict): A dict with words as keys, and their frequency as the value.
@@ -72,31 +76,53 @@ def get_frequencies(words):
         wordpaircount (dict): A dict with tuples (word, successor) as keys, and the frequency of successor immediately following word as the value.
     """
 
-    # Count occurences of each letter and sort in descending order
-    lettercount = {}
-    for letter in "".join(words):
-        if letter in lettercount:
-            lettercount[letter] += 1
-        else: lettercount[letter] = 1
-    lettercount = dict(sorted(lettercount.items(), key = lambda item: item[1], reverse=True))
+    ## Count occurences of each letter and sort in descending order
+    #lettercount = {}
+    #for letter in "".join(words):
+    #    if letter in lettercount:
+    #        lettercount[letter] += 1
+    #    else: lettercount[letter] = 1
+    #lettercount = dict(sorted(lettercount.items(), key = lambda item: item[1], reverse=True))
 
-    # Count occurences of all words and sort in descending order
+    # Count occurences of all words and sort in descending order (old version)
     wordcount = {}
     for word in words:
-        if word in wordcount:
-            wordcount[word] += 1
-        else: wordcount[word] = 1
+        # Check if we should look for word
+        if look_for == "all" or word in look_for:
+            if word in wordcount:
+                wordcount[word] += 1
+            else: wordcount[word] = 1
     wordcount = dict(sorted(wordcount.items(), key = lambda item: item[1], reverse=True))
+
+    # Count occurences of all words and sort in descending order (new version) (remove: it was worse)
+    #wordcount = {}
+    #for word in words: wordcount[word] = words.count(word)
+    #wordcount = dict(sorted(wordcount.items(), key = lambda item: item[1], reverse=True))
     
     # Count all subsequent occurences and sort in descending order
     wordpaircount = {}
     for i in range(len(words)-1):
-        if (words[i], words[i+1]) in wordpaircount:
-            wordpaircount[(words[i], words[i+1])] += 1
-        else: wordpaircount[(words[i], words[i+1])] = 1
+        # Check if we should look for main word
+        if look_for == "all" or words[i] in look_for:
+            # Check if we have already started counting this combination
+            if (words[i], words[i+1]) in wordpaircount:
+                wordpaircount[(words[i], words[i+1])] += 1
+            else: wordpaircount[(words[i], words[i+1])] = 1
     wordpaircount = dict(sorted(wordpaircount.items(), key = lambda item: item[1], reverse=True))
     
-    return lettercount, wordcount, wordpaircount
+    # Should letter freq also be computed?
+    if letter_freq:
+        # Count occurences of each letter and sort in descending order
+        lettercount = {}
+        for letter in "".join(words):
+            if letter in lettercount:
+                lettercount[letter] += 1
+            else: lettercount[letter] = 1
+        lettercount = dict(sorted(lettercount.items(), key = lambda item: item[1], reverse=True))
+
+        return lettercount, wordcount, wordpaircount
+    
+    return wordcount, wordpaircount
 
 
 ### --- RUN THE PROGRAM FROM COMMAND LINE --- ###
